@@ -1,0 +1,1151 @@
+package org.list;
+
+public interface CallBack {
+    void toDo(Object obj);
+}
+package org.list;
+
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void printMenu() {
+        System.out.println("Choose option:");
+        System.out.println("[1] Add value");
+        System.out.println("[2] Add value by index");
+        System.out.println("[3] Add children value by indexes");
+        System.out.println("[4] Get value by index");
+        System.out.println("[5] Remove parent value by index");
+        System.out.println("[6] Remove child value by indexes");
+        System.out.println("[7] Get size of list");
+        System.out.println("[8] Get childs count");
+        System.out.println("[9] Sort parent list");
+        System.out.println("[10] Sort child list");
+        System.out.println("[11] Print list");
+        System.out.println("[12] Serialize list to Binary File");
+        System.out.println("[13] Deserialize list from Binary File");
+        System.out.println("[0] Exit");
+    }
+
+    public static void menu() {
+        MyList list = new MyList();
+        System.out.println("Choose data type: 1 - Integer, 2 - Float, 3 - String, 4 - Fraction");
+        Scanner scanner = new Scanner(System.in);
+        int dataType = scanner.nextInt();
+        if (dataType == 1) {
+            for (int i = 0; i < 10; i++) {
+                UserType integer = MyInteger.create();
+                list.add(integer);
+            }
+        } else if (dataType == 2) {
+            for (int i = 0; i < 10; i++) {
+                list.add(MyFloat.create());
+            }
+        } else if (dataType == 3) {
+            for (int i = 0; i < 10; i++) {
+                list.add(MyString.create());
+            }
+        } else {
+            for (int i = 0; i < 10; i++) {
+                list.add(MyType.create());
+            }
+        }
+        list.printList();
+        MyInteger myInteger = new MyInteger();
+        MyFloat myFloat = new MyFloat();
+        MyString myString = new MyString();
+        MyType myType = new MyType();
+        Integer index1 = null;
+        Integer index2 = null;
+        if (scanner.hasNextLine()) scanner.nextLine();
+        while (true) {
+            printMenu();
+            int option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    if (scanner.hasNextLine()) scanner.nextLine();
+                    if (dataType == 1) {
+                        System.out.println("Enter integer value");
+                        String value = scanner.nextLine();
+                        myInteger = (MyInteger) myInteger.parseValue(value);
+                        list.add(myInteger);
+                    } else if (dataType == 2) {
+                        System.out.println("Enter real");
+                        String value = scanner.nextLine();
+                        myFloat = (MyFloat) myFloat.parseValue(value);
+                        list.add(myFloat);
+                    } else if (dataType == 3) {
+                        System.out.println("Enter string");
+                        String value = scanner.nextLine();
+                        myString = (MyString) myString.parseValue(value);
+                        list.add(myString);
+                    } else {
+                        System.out.println("Enter fraction");
+                        String value = scanner.nextLine();
+                        myType = (MyType) myType.parseValue(value);
+                        list.add(myType);
+                    }
+                    break;
+                case 2:
+                    if (list.getSize() == 0) {
+                        System.out.println("List is empty, add something first");
+                    } else {
+                        System.out.println("Enter index from 0 to " + (list.getSize()));
+                    }
+                    index1 = scanner.nextInt();
+                    scanner.nextLine(); // Очистка буфера
+
+                    if (index1 < 0 || index1 >= list.getSize() + 1) {
+                        System.out.println("Invalid index. Please enter a valid index.");
+                        return;
+                    }
+
+                    String value;
+                    if (dataType == 1) {
+                        System.out.println("Enter integer value");
+                        value = scanner.nextLine();
+                        try {
+                            myInteger = (MyInteger) myInteger.parseValue(value);
+                            list.add(myInteger, index1);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else if (dataType == 2) {
+                        System.out.println("Enter real");
+                        value = scanner.nextLine();
+                        try {
+                            myFloat = (MyFloat) myFloat.parseValue(value);
+                            list.add(myFloat, index1);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else if (dataType == 3) {
+                        System.out.println("Enter string");
+                        value = scanner.nextLine();
+                        try {
+                            myString = (MyString) myString.parseValue(value);
+                            list.add(myString);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else {
+                        System.out.println("Enter fraction");
+                        value = scanner.nextLine();
+                        try {
+                            myType = (MyType) myType.parseValue(value);
+                            list.add(myType);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                    break;
+                case 3:
+
+                    if (list.getSize() == 0) {
+                        System.out.println("List is empty, add something first");
+                    } else {
+                        System.out.println("Enter index from 0 to " + (list.getSize()));
+                    }
+                    index1 = scanner.nextInt();
+                    scanner.nextLine(); // Очистка буфера
+                    System.out.println("Enter index from 0 to " + (list.getChildSize(index1)));
+                    index2 = scanner.nextInt();
+                    scanner.nextLine();
+                    if ((index1 < 0 || index1 >= list.getSize() + 1) && (index2 < 0 || index2 >= list.getChildSize(index1) + 1)) {
+                        System.out.println("Invalid indexes. Please enter a valid indexes.");
+                        return;
+                    }
+
+                    if (dataType == 1) {
+                        System.out.println("Enter integer value");
+                        value = scanner.nextLine();
+                        try {
+                            myInteger = (MyInteger) myInteger.parseValue(value);
+                            list.addChild(myInteger, index1, index2);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else if (dataType == 2) {
+                        System.out.println("Enter real");
+                        value = scanner.nextLine();
+                        try {
+                            myFloat = (MyFloat) myFloat.parseValue(value);
+                            list.addChild(myFloat, index1, index2);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else if (dataType == 3) {
+                        System.out.println("Enter string");
+                        value = scanner.nextLine();
+                        try {
+                            myString = (MyString) myString.parseValue(value);
+                            list.addChild(myString, index1, index2);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    } else {
+                        System.out.println("Enter fraction");
+                        value = scanner.nextLine();
+                        try {
+                            myType = (MyType) myType.parseValue(value);
+                            list.addChild(myType, index1, index2);
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                    break;
+                case 4:
+                    if (list.getSize() == 0)
+                        System.out.println("List is empty, there is no element to get");
+                    else {
+                        System.out.println("Enter index from 0 to " + (list.getSize() - 1));
+                        index1 = scanner.nextInt();
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                        try {
+                            System.out.println("Value of " + index1 + " element = " + list.getNode(index1).getData());
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                    break;
+                case 5:
+                    if (list.getSize() == 0)
+                        System.out.println("List is empty, there is no element to remove");
+                    else {
+                        System.out.println("Enter index from 0 to " + (list.getSize() - 1));
+                        index1 = scanner.nextInt();
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                        try {
+                            System.out.println("Removed element:" + list.remove(index1));
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                    break;
+                case 6:
+                    if (list.getSize() == 0)
+                        System.out.println("List is empty, there is no element to remove");
+                    else {
+                        System.out.println("Enter index from 0 to " + (list.getSize() - 1));
+                        index1 = scanner.nextInt();
+                        scanner.nextLine(); // Очистка буфера
+                        if (list.getChildSize(index1) == 0) {
+                            System.out.println("No children to remove.");
+                            break;
+                        }
+                        System.out.println("Enter index from 0 to " + (list.getChildSize(index1) - 1));
+                        index2 = scanner.nextInt();
+                        if (scanner.hasNextLine()) scanner.nextLine();
+                        try {
+                            System.out.println("Removed element: " + list.removeChild(index1, index2));
+                        } catch (IllegalArgumentException ex) {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                    break;
+                case 7:
+                    System.out.println("Size of parent list: " + list.getSize());
+                    System.out.println("Total child elements: " + list.getTotalChildElements());
+                    System.out.println("Total elements: " + (list.getSize() + list.getTotalChildElements()));
+                    break;
+                case 8:
+                    if (list.getSize() == 0)
+                        System.out.println("List is empty, there is no element to print");
+                    else {
+                        System.out.println("Enter index from 0 to " + (list.getSize() - 1));
+                        index1 = scanner.nextInt();
+                        scanner.nextLine(); // Очистка буфера
+                        if (index1 < 0 || index1 >= list.getSize()) {
+                            throw new IllegalArgumentException("Invalid index " + index1);
+                        } else {
+                            System.out.println("Size of childs list: " + list.getNode(index1).getChilds());
+                        }
+                    }
+                    break;
+                case 9:
+                    if (list.getSize() == 0)
+                        System.out.println("List is empty, add something first");
+                    else {
+                        list.printList();
+                        if (dataType == 1) {
+                            list.quickSort(0, list.getSize() - 1, myInteger.getTypeComparator());
+                        } else if (dataType == 2) {
+                            list.quickSort(0, list.getSize() - 1, myFloat.getTypeComparator());
+                        } else if (dataType == 3){
+                            list.quickSort(0, list.getSize() - 1, myString.getTypeComparator());
+                        } else {
+                            list.quickSort(0, list.getSize() - 1, myType.getTypeComparator());
+                        }
+                        list.printList();
+                        break;
+                    }
+                case 10:
+                    if (list.getTotalChildElements() == 0)
+                        System.out.println("List is empty, add something first");
+                    else {
+                        list.printList();
+                        if (dataType == 1) {
+                            for (int i = 0; i < list.getSize(); i++) {
+                                System.out.println(i);
+                                list.quickSortChild(i, 0, list.getChildSize(i) - 1, myInteger.getTypeComparator());
+                            }
+                        } else if (dataType == 2) {
+                            for (int i = 0; i < list.getSize(); i++) {
+                                list.quickSortChild(i, 0, list.getChildSize(i) - 1, myFloat.getTypeComparator());
+                            }
+                        } else if (dataType == 3) {
+                            for (int i = 0; i < list.getSize(); i++) {
+                                list.quickSortChild(i, 0, list.getChildSize(i) - 1, myString.getTypeComparator());
+                            }
+                        } else {
+                            for (int i = 0; i < list.getSize(); i++) {
+                                list.quickSortChild(i, 0, list.getChildSize(i) - 1, myType.getTypeComparator());
+                            }
+                        }
+                        list.printList();
+                    }
+                    break;
+                case 11:
+                    list.printList();
+                    break;
+                case 12:
+                    try {
+                        if (list.getSize() == 0)
+                            System.out.println("List is empty, add something first");
+                        else {
+                            MyList.serializeToBinary(list);
+                        }
+                    } catch (IOException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                    break;
+                case 13:
+                    try {
+                        list = MyList.deserializeFromBinary();
+                    } catch (ClassNotFoundException | IOException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                    break;
+                case 0:
+                    return;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        menu();
+    }
+}
+package org.list;
+
+public class MyDataType {
+}
+package org.list;
+
+import java.util.Comparator;
+import java.util.Random;
+
+public class MyFloat implements UserType {
+
+    private float value;
+
+    public MyFloat() {
+    }
+
+    public MyFloat(float value) {
+        this.value = value;
+    }
+
+    public MyFloat(double value) {
+        this.value = (float)value;
+    }
+
+
+
+    public float getValue() {
+        return this.value;
+    }
+
+    public void setValue(float value) {
+        this.value = value;
+    }
+
+    @Override
+    public Comparator<Object> getTypeComparator() {
+        return new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                return Float.compare(((MyFloat) o1).value, ((MyFloat) o2).value);
+            }
+        };
+    }
+
+    public static UserType clone(UserType obj){
+        MyFloat myFloat = new MyFloat();
+        myFloat.value = ((MyFloat)obj).getValue();
+        return myFloat;
+    }
+
+    @Override
+    public String typeName() {
+        return String.valueOf(this.getClass());
+    }
+
+    @Override
+    public UserType parseValue(String ss) {
+        return new MyFloat(Float.parseFloat(ss));
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    public static UserType create() {
+        return new MyFloat(new Random().nextFloat(10));
+    }
+}
+package org.list;
+
+import java.util.Comparator;
+import java.util.Random;
+
+public class MyInteger implements UserType {
+
+    private Integer value;
+
+    @Override
+    public String typeName() {
+        return String.valueOf(this.getClass());
+    }
+
+    public MyInteger() {
+    }
+
+    public MyInteger(Integer value) {
+        this.value = value;
+    }
+
+    @Override
+    public UserType parseValue(String ss) {
+        return new MyInteger(Integer.parseInt(ss));
+    }
+
+    @Override
+    public Comparator<Object> getTypeComparator() {
+        return new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                return ((MyInteger) o1).value - ((MyInteger) o2).value;
+            }
+        };
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    public static UserType create() {
+        Random r = new Random();
+        int randValue = r.nextInt(100) + 1;
+        return new MyInteger(randValue);
+    }
+
+    public static UserType clone(UserType obj) {
+        MyInteger myInteger = new MyInteger();
+        myInteger.value = ((MyInteger) obj).value;
+        return myInteger;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public Integer getValue() {
+        return this.value;
+    }
+}
+package org.list;
+
+import java.io.*;
+import java.util.Comparator;
+
+public class MyList implements Serializable {
+    private Node head;
+
+    private Node child;
+
+    private int size = 0;
+
+    private int totalChildElements = 0;
+
+    public MyList() {
+        this.head = null;
+        this.child = null;
+        this.size = 0;
+    }
+
+    public void add(UserType ob) {
+        Node cur = this.head;
+        if (this.head == null) {
+            this.head = new Node(null, ob); // Создайте новый узел с данными
+            size++;
+            return;
+        }
+        while (cur.getNext() != null) {
+            cur = cur.getNext();
+        }
+        Node node = new Node(null, ob);
+        cur.setNext(node); // Связать предыдущий узел с новым
+        size++;
+
+    }
+
+    public void add(UserType ob, int index) {
+        if (index < 0 || index > size) {
+            throw new IllegalArgumentException("Invalid index " + index);
+        }
+
+        if (index == size) {
+            add(ob);
+            return;
+        }
+        Node cur = head;
+        Node prev = head;
+        for (int i = 0; i < index; i++) {
+            prev = cur;
+            cur = cur.getNext();
+        }
+        Node node = new Node(null, ob);
+        if (prev == cur) {
+            head = node;
+            node.setNext(cur);
+            size++;
+            return;
+        }
+        size++;
+        prev.setNext(node);
+        node.setNext(cur);
+    }
+
+    public void addChild(UserType ob, int index) {
+        Node parentNode = getNode(index);
+        if (parentNode != null) {
+            Node newChildNode = new Node(null, ob);
+
+            if (parentNode.getChild() == null) {
+                parentNode.setChild(newChildNode);
+            } else {
+                Node currentChild = parentNode.getChild();
+                while (currentChild.getNext() != null) {
+                    currentChild = currentChild.getNext();
+                }
+                currentChild.setNext(newChildNode);
+            }
+        }
+        this.totalChildElements++;
+    }
+
+    public void addChild(UserType ob, int index1, int index2) {
+        if (index1 < 0 || index1 > size + 1) {
+            throw new IllegalArgumentException("Invalid parent index " + index1);
+        }
+        if (index2 < 0 || index2 > getChildSize(index1) + 1) {
+            throw new IllegalArgumentException("Invalid child index " + index2);
+        }
+
+        Node parentNode = getNode(index1);
+        Node newChildNode = new Node(null, ob);
+
+        // Обрабатываем случай, когда добавляем в начало или в конец
+        if (index2 == 0) {
+            // Добавление в начало
+            newChildNode.setNext(parentNode.getChild());
+            parentNode.setChild(newChildNode);
+
+        } else {
+            // Добавление в середину или в конец
+
+            Node curChild = parentNode.getChild();
+            for (int i = 0; i < index2 - 1; i++) {
+                curChild = curChild.getNext();
+            }
+            newChildNode.setNext(curChild);
+            if (curChild != null) {
+                Node prevChild = parentNode.getChild();
+                for (int i = 0; i < index2 - 1; i++) {
+                    prevChild = prevChild.getNext();
+                }
+                prevChild.setNext(newChildNode);
+            } else {
+                parentNode.setChild(newChildNode);
+            }
+        }
+        parentNode.addChilds();
+        this.totalChildElements++;
+    }
+
+
+    public Node getNode(int index) {
+        if (index < 0 || index >= size) {
+            throw new IllegalArgumentException("Invalid index " + index);
+        }
+        Node cur = head;
+        for (int i = 0; i < index; i++) {
+            cur = cur.getNext();
+        }
+        return cur;
+    }
+
+    public Node getChildNode(int index1, int index2) {
+        if (index2 < 0 || index2 >= getChildSize(index1)) {
+            throw new IllegalArgumentException("Invalid index " + index2);
+        }
+        Node cur = getNode(index1).getChild();
+        for (int i = 0; i < index2; i++) {
+            cur = cur.getNext();
+        }
+        return cur;
+    }
+
+    public Object remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IllegalArgumentException("Invalid index " + index);
+        }
+
+        Node cur = head;
+        Node prev = null;
+
+        for (int i = 0; i < index; i++) {
+            prev = cur;
+            cur = cur.getNext();
+        }
+
+        // Сохраняем ссылку на дочерние элементы
+        Node curChild = cur.getChild();
+
+        // Рекурсивно удаляем всех потомков
+        removeChildren(curChild);
+
+        Object ob = cur.getData();
+
+        if (prev == null) { // Удаление первого элемента
+            head = head.getNext();
+        } else {
+            prev.setNext(cur.getNext());
+        }
+
+        this.size--;
+        return ob;
+    }
+
+    private void removeChildren(Node child) {
+        while (child != null) {
+            Node nextChild = child.getNext();
+            removeChildren(child.getChild()); // Рекурсивно удаляем потомков
+            child.setNext(null); // Убираем ссылку на следующий элемент
+            child = nextChild; // Переходим к следующему дочернему элементу
+        }
+    }
+
+
+    public Object removeChild(int index1, int index2) {
+        if (index1 < 0 || index1 >= size) {
+            throw new IllegalArgumentException("Invalid index " + index1);
+        } else if (index2 < 0 || index2 >= getChildSize(index1)) {
+            throw new IllegalArgumentException("Invalid index " + index2);
+        }
+
+        Node cur = getNode(index1);
+        Node curChild = cur.getChild();
+        Node prev = cur;
+        if (index2 != 0) {
+            for (int i = 0; i < index2; i++) {
+                prev = curChild;
+                curChild = curChild.getNext();
+            }
+        }
+
+        Object ob = curChild.getData();
+        if (prev == cur) {
+            cur.setNext(curChild.getNext());
+        } else {
+            prev.setNext(curChild.getNext());
+        }
+
+        this.totalChildElements--;
+        return ob;
+    }
+
+    public int getChildSize(int index1) {
+        Node parent = getNode(index1);
+        return parent.getChilds();
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public int getTotalChildElements() {
+        return totalChildElements;
+    }
+
+    void swap(Node a, Node aPrev, Node b, Node bPrev) {
+        if (a.getNext() == b) {
+            a.setNext(b.getNext());
+            b.setNext(a);
+            if (aPrev != null)
+                aPrev.setNext(b);
+            else head = b;
+        } else {
+            Node tmp = a.getNext();
+            a.setNext(b.getNext());
+            b.setNext(tmp);
+            if (aPrev != null)
+                aPrev.setNext(b);
+            else
+                head = b; //for childs change to parent.setChild
+            if (bPrev != null)
+                bPrev.setNext(a);
+        }
+    }
+
+    int partition(int start, int end, Comparator comparator) {
+        Node pivot = getNode(end);
+        Node prev, pPrev, pivotPrev;
+        if (end - 1 < 0)
+            pivotPrev = null;
+        else
+            pivotPrev = getNode(end - 1);
+        if (start - 1 < 0)
+            pPrev = null;
+        else
+            pPrev = getNode(start - 1);
+        Node cur = getNode(start);
+        int pIndex = start;
+        Node p = getNode(pIndex);
+        if (start - 1 < 0)
+            prev = null;
+        else
+            prev = getNode(start - 1);
+        while (cur != pivot) {
+            if (comparator.compare(cur.getData(), pivot.getData()) <= 0) {
+                swap(p, pPrev, cur, prev);
+                if (cur == pivotPrev)
+                    pivotPrev = p;
+                Node tmp = p;
+                pPrev = cur;
+                p = cur.getNext();
+                pIndex++;
+                cur = tmp.getNext();
+                prev = tmp;
+            } else {
+                prev = cur;
+                cur = cur.getNext();
+            }
+        }
+        swap(p, pPrev, pivot, pivotPrev);
+        return pIndex;
+    }
+
+    public void quickSort(int start, int end, Comparator comparator) {
+        if (start >= end)
+            return;
+        int pivot = partition(start, end, comparator);
+        quickSort(start, pivot - 1, comparator);
+        quickSort(pivot + 1, end, comparator);
+    }
+
+    public void quickSortChild(int index, int start, int end, Comparator comparator) {
+        if (start >= end)
+            return;
+        int pivot = partitionChilds(index, start, end, comparator);
+        quickSortChild(index, start, pivot - 1, comparator);
+        quickSortChild(index, pivot + 1, end, comparator);
+    }
+
+    int partitionChilds(int index, int start, int end, Comparator comparator) {
+
+        Node pivot = getChildNode(index, end);
+        System.out.println(pivot.getData()); //correct -------------------------------- delete this string
+        Node prev, pPrev, pivotPrev;
+        if (end - 1 < 0)
+            pivotPrev = null;
+        else
+            pivotPrev = getChildNode(index, end - 1);
+        if (start - 1 < 0)
+            pPrev = null;
+        else
+            pPrev = getChildNode(index, start - 1);
+        Node cur = getChildNode(index, start);
+        int pIndex = start;
+        Node p = getChildNode(index, pIndex);
+        if (start - 1 < 0)
+            prev = null;
+        else
+            prev = getChildNode(index, start - 1);
+        while (cur != pivot) {
+            if (comparator.compare(cur.getData(), pivot.getData()) <= 0) {
+                swapChild(index, p, pPrev, cur, prev);
+                if (cur == pivotPrev)
+                    pivotPrev = p;
+                Node tmp = p;
+                pPrev = cur;
+                p = cur.getNext();
+                pIndex++;
+                cur = tmp.getNext();
+                prev = tmp;
+            } else {
+                prev = cur;
+                cur = cur.getNext();
+            }
+        }
+        swapChild(index, p, pPrev, pivot, pivotPrev);
+        System.out.println(pIndex);
+        return pIndex;
+    }
+
+    void swapChild(int index, Node a, Node aPrev, Node b, Node bPrev) {
+        if (a.getNext() == b) {
+            a.setNext(b.getNext());
+            b.setNext(a);
+            if (aPrev != null)
+                aPrev.setNext(b);
+            else getNode(index).setChild(b);
+        } else {
+            Node tmp = a.getNext();
+            a.setNext(b.getNext());
+            b.setNext(tmp);
+            if (aPrev != null)
+                aPrev.setNext(b);
+            else
+                getNode(index).setChild(b); //for childs change to parent.setChild
+            if (bPrev != null)
+                bPrev.setNext(a);
+        }
+    }
+
+
+    public void printList() {
+        Node cur = head;
+        if (size == 0) {
+            System.out.println("List is empty");
+            return;
+        }
+        while (cur != null) {
+            Node curChild = cur.getChild();
+            System.out.print(cur.getData());
+            if (curChild == null) {
+                System.out.print("(");
+            } else {
+                System.out.print("( ");
+            }
+            for (int i = 0; i < cur.getChilds(); i++) {
+                System.out.print(curChild.getData() + " ");
+                curChild = curChild.getNext();
+            }
+            System.out.print(") ");
+            cur = cur.getNext();
+        }
+        System.out.println();
+    }
+
+    public void forEach(CallBack callBackInt) {
+        Node cur = head;
+        while (cur != null) {
+            callBackInt.toDo(cur.getData());
+            cur = cur.getNext();
+        }
+    }
+
+    public static void serializeToBinary(MyList list) throws IOException {
+        FileOutputStream fos = new FileOutputStream("temp.out");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(list);
+        oos.flush();
+        oos.close();
+    }
+
+    public static MyList deserializeFromBinary() throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream("temp.out");
+        ObjectInputStream oin = new ObjectInputStream(fis);
+        return (MyList) oin.readObject();
+    }
+
+}
+package org.list;
+
+import java.util.Comparator;
+import java.util.Random;
+
+public class MyString implements UserType {
+
+    private String value;
+
+    @Override
+    public String typeName() {
+        return String.valueOf(this.getClass());
+    }
+
+    public MyString() {
+    }
+
+    public MyString(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public UserType parseValue(String ss) {
+        return new MyString(ss);
+    }
+
+    @Override
+    public Comparator<Object> getTypeComparator() {
+        return new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                return ((MyString) o1).value.compareTo(((MyString) o2).value);
+            }
+        };
+    }
+
+    public static UserType create() {
+        Random r = new Random();
+        String randVal = r.ints(65, 91)
+                .limit(5)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        MyString myString = new MyString(randVal);
+        return myString;
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
+
+    public static UserType clone(UserType obj) {
+        MyString myString = new MyString();
+        myString.value = ((MyString) obj).value;
+        return myString;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue(){
+        return this.value;
+    }
+
+}
+package org.list;
+
+import java.util.Comparator;
+import java.util.Random;
+
+public class MyType implements UserType{
+    public MyType() {
+        integerPart = 1;
+        numerator = 1;
+        denominator = 2;
+    }
+
+    public MyType(final int integerPart, final int numerator, final int denominator) {
+        if (isMyTypeValid(numerator, denominator)) {
+            this.numerator = numerator;
+            this.denominator = denominator;
+            this.integerPart = integerPart;
+        } else {
+            this.integerPart = 1;
+            this.numerator = 1;
+            this.denominator = 2;
+        }
+
+    }
+
+    public static boolean isMyTypeValid(int numerator, int denominator) {
+        if (numerator >= denominator)
+            return false;
+        return denominator != 0;
+    }
+
+    @Override
+    public String typeName() {
+        return String.valueOf(this.getClass());
+    }
+
+
+    public static UserType create() {
+        Random r = new Random();
+        int randIntPart = r.nextInt(100) + 1;
+        int randNum = r.nextInt(100) + 1;
+        int ranDen = r.nextInt(100) + 1;
+        while (!isMyTypeValid(randNum, ranDen)) {
+            randNum = r.nextInt(100) + 1;
+            ranDen = r.nextInt(100) + 1;
+        }
+        MyType myType = new MyType(randIntPart, randNum, ranDen);
+        return myType;
+    }
+
+    //@Override
+    public static UserType clone(UserType obj) {
+        MyType myType = new MyType();
+        myType.setDenominator(((MyType) obj).getDenominator());
+        myType.setNumerator(((MyType) obj).getNumerator());
+        myType.setIntegerPart(((MyType) obj).getIntegerPart());
+        return myType;
+    }
+
+
+    @Override
+    public UserType parseValue(String ss) {
+        String[] parts = ss.split(" ");
+        String[] frParts = parts[1].split("/");
+        MyType myType = new MyType(Integer.parseInt(parts[0]), Integer.parseInt(frParts[0]), Integer.parseInt(frParts[1]));
+        return myType;
+    }
+
+    @Override
+    public Comparator<Object> getTypeComparator() {
+        return new Comparator<>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                double myType1 = ((double) ((MyType) o1).numerator) / ((MyType) o1).denominator;
+                double myType2 = ((double) ((MyType) o2).numerator) / ((MyType) o2).denominator;
+                if (((MyType) o1).integerPart != ((MyType) o2).integerPart) {
+                    return ((MyType) o1).integerPart - ((MyType) o2).integerPart;
+                } else
+                    return Double.compare(myType1, myType2);
+            }
+        };
+    }
+
+
+    public int getNumerator() {
+        return numerator;
+    }
+
+    public void setNumerator(int numerator) {
+        if (isMyTypeValid(numerator, denominator)) {
+            this.numerator = numerator;
+        } else
+            this.numerator = 1;
+    }
+
+    public void setDenominator(int denominator) {
+        if (isMyTypeValid(numerator, denominator)) {
+            this.denominator = denominator;
+        } else
+            this.denominator = 2;
+
+    }
+
+    public void setIntegerPart(int integerPart) {
+        this.integerPart = integerPart;
+    }
+
+    public int getDenominator() {
+        return denominator;
+    }
+
+    public int getIntegerPart() {
+        return integerPart;
+    }
+
+    @Override
+    public String toString() {
+        return "Fraction{" +
+                integerPart + " " +
+                numerator + "/" +
+                denominator + "}";
+    }
+
+    private int numerator;
+    private int denominator;
+    private int integerPart;
+}
+package org.list;
+
+import java.io.Serializable;
+
+public class Node implements Serializable {
+
+    private Node next;
+
+    private Node child;
+
+    private Integer childs = 0;
+
+    private UserType data;
+
+    public Object getData() {
+        return this.data;
+    }
+
+    public void setChilds(Integer childs){
+        this.childs = childs;
+    }
+
+    public void addChilds(){
+        this.childs++;
+    }
+
+    public Integer getChilds(){
+        return this.childs;
+    }
+
+    public Node getNext() {
+        return next;
+    }
+
+    public Node getChild() {
+        return child;
+    }
+
+    public void setChild(Node child) {
+        this.child = child;
+    }
+
+
+    public void setNext(Node next) {
+        this.next = next;
+    }
+
+    public void setData(UserType data) {
+        this.data = data;
+    }
+
+    public Node(Node next, UserType data) {
+        this.next = next;
+        this.data = data;
+    }
+}
+package org.list;
+
+import java.io.Serializable;
+import java.util.Comparator;
+
+public interface UserType extends Serializable {
+    public String typeName();
+
+    public static Object create() {
+        return null;
+    }
+
+    public static Object clone(Object obj) {
+        return null;
+    }
+
+    public Object parseValue(String ss);
+
+    public Comparator<Object> getTypeComparator();
+}
+
+
+
